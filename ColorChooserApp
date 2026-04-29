@@ -1,0 +1,121 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+public class ColorChooserApp {
+
+    public static void main(String[] args) {
+        // Создаём главное окно
+        JFrame frame = new JFrame("Выбор любимого цвета");
+        frame.setSize(500, 350);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
+
+        // Панель для компонентов с отступами
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // 1. JComboBox с любимыми цветами
+        String[] colors = {"Красный", "Синий", "Зелёный", "Жёлтый", "Оранжевый", "Фиолетовый", "Розовый", "Чёрный", "Белый"};
+        JComboBox<String> colorComboBox = new JComboBox<>(colors);
+        colorComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        colorComboBox.setPreferredSize(new Dimension(200, 30));
+
+        JLabel comboLabel = new JLabel("Выберите цвет из списка:");
+        comboLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // 2. JCheckBox и JTextField для своего цвета
+        JCheckBox customColorCheckBox = new JCheckBox("Ввести свой цвет");
+        customColorCheckBox.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        JTextField customColorField = new JTextField(15);
+        customColorField.setFont(new Font("Arial", Font.PLAIN, 14));
+        customColorField.setEnabled(false); // Изначально недоступно
+        customColorField.setPreferredSize(new Dimension(200, 30));
+
+        // 3. Кнопка "Ответить"
+        JButton answerButton = new JButton("Ответить");
+        answerButton.setFont(new Font("Arial", Font.BOLD, 14));
+        answerButton.setBackground(new Color(100, 150, 200));
+        answerButton.setForeground(Color.WHITE);
+
+        // 4. Надпись для ответа
+        JLabel answerLabel = new JLabel("Ответ: ");
+        answerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        answerLabel.setForeground(new Color(0, 100, 0));
+
+        // Обработчик чекбокса: включает/выключает текстовое поле
+        customColorCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (customColorCheckBox.isSelected()) {
+                    customColorField.setEnabled(true);
+                    colorComboBox.setEnabled(false);
+                } else {
+                    customColorField.setEnabled(false);
+                    colorComboBox.setEnabled(true);
+                }
+            }
+        });
+
+        // Обработчик кнопки "Ответить"
+        answerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedColor;
+
+                if (customColorCheckBox.isSelected()) {
+                    // Если выбран свой цвет
+                    String customColor = customColorField.getText().trim();
+                    if (customColor.isEmpty()) {
+                        answerLabel.setText("Ответ: Пожалуйста, введите свой цвет!");
+                        return;
+                    }
+                    selectedColor = customColor;
+                } else {
+                    // Если выбран цвет из списка
+                    selectedColor = (String) colorComboBox.getSelectedItem();
+                }
+
+                answerLabel.setText("Ответ: Ваш любимый цвет — " + selectedColor + "!");
+            }
+        });
+
+        // Добавляем компоненты в панель
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(comboLabel, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        mainPanel.add(colorComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        mainPanel.add(customColorCheckBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        mainPanel.add(customColorField, gbc);
+
+        gbc.gridy = 4;
+        mainPanel.add(answerButton, gbc);
+
+        gbc.gridy = 5;
+        mainPanel.add(answerLabel, gbc);
+
+        // Добавляем панель в окно
+        frame.add(mainPanel, BorderLayout.CENTER);
+
+        // Показываем окно
+        frame.setVisible(true);
+    }
+}
