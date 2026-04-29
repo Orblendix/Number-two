@@ -1,0 +1,87 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class JSpinnerExample {
+
+    public static void main(String[] args) {
+        // Создаём главное окно
+        JFrame frame = new JFrame("JSpinner - Книги в лагерь");
+        frame.setSize(450, 250);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
+
+        // Создаём панель для центрирования компонентов
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        // Создаём JSpinner с диапазоном от 0 до 100 (шаг 1)
+        SpinnerModel spinnerModel = new SpinnerNumberModel(0, 0, 100, 1);
+        JSpinner bookSpinner = new JSpinner(spinnerModel);
+        bookSpinner.setFont(new Font("Arial", Font.PLAIN, 18));
+        bookSpinner.setPreferredSize(new Dimension(100, 35));
+
+        // Создаём метку для JSpinner
+        JLabel questionLabel = new JLabel("Сколько книг вы возьмёте с собой в лагерь?");
+        questionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        // Создаём кнопку "Ответить"
+        JButton answerButton = new JButton("Ответить");
+        answerButton.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        // Создаём надпись для ответа
+        JLabel answerLabel = new JLabel("Ответ: ");
+        answerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        answerLabel.setForeground(new Color(0, 100, 0)); // Зелёный цвет
+
+        // Обработчик нажатия кнопки
+        answerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int booksCount = (int) bookSpinner.getValue();
+
+                // Формируем ответ в зависимости от количества книг
+                String answer;
+                if (booksCount == 0) {
+                    answer = "Вы не взяли ни одной книги. Может, возьмёте хотя бы одну?";
+                } else if (booksCount == 1) {
+                    answer = "Вы взяли 1 книгу. Хороший выбор для отдыха!";
+                } else if (booksCount <= 5) {
+                    answer = "Вы взяли " + booksCount + " книги. В лагере будет что почитать!";
+                } else {
+                    answer = "Вы взяли " + booksCount + " книг. Не слишком ли много? Места в рюкзаке хватит?";
+                }
+
+                answerLabel.setText("Ответ: " + answer);
+            }
+        });
+
+        // Добавляем компоненты в панель
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(questionLabel, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        mainPanel.add(bookSpinner, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        mainPanel.add(answerButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        mainPanel.add(answerLabel, gbc);
+
+        // Добавляем панель в окно
+        frame.add(mainPanel, BorderLayout.CENTER);
+
+        // Показываем окно
+        frame.setVisible(true);
+    }
+}
