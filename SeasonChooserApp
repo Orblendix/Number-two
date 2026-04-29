@@ -1,0 +1,111 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class SeasonChooserApp {
+
+    public static void main(String[] args) {
+        // Создаём главное окно
+        JFrame frame = new JFrame("Выбор любимого времени года");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
+
+        // Главная панель с отступами
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Создаём радиокнопки для времён года
+        JRadioButton springButton = new JRadioButton("Весна");
+        JRadioButton summerButton = new JRadioButton("Лето");
+        JRadioButton autumnButton = new JRadioButton("Осень");
+        JRadioButton winterButton = new JRadioButton("Зима");
+
+        // Настраиваем шрифт для радиокнопок
+        springButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        summerButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        autumnButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        winterButton.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        // Объединяем кнопки в одну группу (можно выбрать только одну)
+        ButtonGroup seasonGroup = new ButtonGroup();
+        seasonGroup.add(springButton);
+        seasonGroup.add(summerButton);
+        seasonGroup.add(autumnButton);
+        seasonGroup.add(winterButton);
+
+        // По умолчанию выбираем "Лето"
+        summerButton.setSelected(true);
+
+        // Метка-вопрос
+        JLabel questionLabel = new JLabel("Какое ваше любимое время года?");
+        questionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        // Панель для радиокнопок
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new GridLayout(4, 1, 10, 10));
+        radioPanel.setBorder(BorderFactory.createTitledBorder("Выберите вариант"));
+        radioPanel.add(springButton);
+        radioPanel.add(summerButton);
+        radioPanel.add(autumnButton);
+        radioPanel.add(winterButton);
+
+        // Кнопка "Ответить"
+        JButton answerButton = new JButton("Ответить");
+        answerButton.setFont(new Font("Arial", Font.BOLD, 14));
+        answerButton.setBackground(new Color(70, 130, 200));
+        answerButton.setForeground(Color.WHITE);
+        answerButton.setFocusPainted(false);
+
+        // Надпись для ответа
+        JLabel answerLabel = new JLabel("Ответ: ");
+        answerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        answerLabel.setForeground(new Color(0, 100, 0));
+
+        // Обработчик кнопки "Ответить"
+        answerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedSeason = "";
+
+                if (springButton.isSelected()) {
+                    selectedSeason = "Весна 🌸";
+                } else if (summerButton.isSelected()) {
+                    selectedSeason = "Лето ☀️";
+                } else if (autumnButton.isSelected()) {
+                    selectedSeason = "Осень 🍂";
+                } else if (winterButton.isSelected()) {
+                    selectedSeason = "Зима ❄️";
+                }
+
+                answerLabel.setText("Ответ: Ваше любимое время года — " + selectedSeason + "!");
+            }
+        });
+
+        // Добавляем компоненты в панель
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(questionLabel, gbc);
+
+        gbc.gridy = 1;
+        mainPanel.add(radioPanel, gbc);
+
+        gbc.gridy = 2;
+        mainPanel.add(answerButton, gbc);
+
+        gbc.gridy = 3;
+        mainPanel.add(answerLabel, gbc);
+
+        // Добавляем панель в окно
+        frame.add(mainPanel, BorderLayout.CENTER);
+
+        // Показываем окно
+        frame.setVisible(true);
+    }
+}
