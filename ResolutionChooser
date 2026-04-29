@@ -1,0 +1,87 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class ResolutionChooser extends JFrame {
+
+    private JComboBox<String> resolutionComboBox;
+    private JButton okButton;
+
+    // Предустановленные разрешения экрана
+    private final String[] resolutions = {
+        "640x480",
+        "800x600",
+        "1024x768",
+        "1280x720",
+        "1366x768",
+        "1920x1080",
+        "2560x1440"
+    };
+
+    public ResolutionChooser() {
+        // Настройка окна выбора
+        setTitle("Выбор разрешения экрана");
+        setSize(300, 150);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new FlowLayout());
+
+        // Создаём метку
+        JLabel label = new JLabel("Выберите разрешение экрана:");
+
+        // Создаём выпадающий список
+        resolutionComboBox = new JComboBox<>(resolutions);
+        resolutionComboBox.setPreferredSize(new Dimension(150, 25));
+
+        // Создаём кнопку
+        okButton = new JButton("ОК");
+
+        // Добавляем всё в окно
+        add(label);
+        add(resolutionComboBox);
+        add(okButton);
+
+        // Обработчик нажатия кнопки
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Получаем выбранное разрешение
+                String selected = (String) resolutionComboBox.getSelectedItem();
+                String[] dimensions = selected.split("x");
+                int width = Integer.parseInt(dimensions[0]);
+                int height = Integer.parseInt(dimensions[1]);
+
+                // Закрываем окно выбора
+                dispose();
+
+                // Открываем новое окно с выбранным размером
+                openMainWindow(width, height);
+            }
+        });
+    }
+
+    private void openMainWindow(int width, int height) {
+        JFrame mainFrame = new JFrame("Новое окно - " + width + "x" + height);
+        mainFrame.setSize(width, height);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setLocationRelativeTo(null);
+
+        // Добавим текст в центр окна
+        JLabel label = new JLabel("Разрешение окна: " + width + " x " + height, SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 20));
+        mainFrame.add(label);
+
+        mainFrame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        // Запускаем окно выбора
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new ResolutionChooser().setVisible(true);
+            }
+        });
+    }
+}
