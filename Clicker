@@ -1,0 +1,54 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Clicker {
+
+    private int clickCount = 0;
+    private JLabel counterLabel;
+    private JButton clickButton;
+
+    public Clicker() {
+        // Создаём главное окно
+        JFrame frame = new JFrame("Кликер");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
+
+        // Создаём надпись для счётчика
+        counterLabel = new JLabel("Количество нажатий: 0", SwingConstants.CENTER);
+        counterLabel.setFont(new Font("Arial", Font.BOLD, 24));
+
+        // Создаём кнопку
+        clickButton = new JButton("Нажми меня!");
+        clickButton.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        // Обработчик нажатия кнопки
+        clickButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clickCount++;
+                counterLabel.setText("Количество нажатий: " + clickCount);
+            }
+        });
+
+        // Добавляем компоненты в окно
+        frame.add(counterLabel, BorderLayout.CENTER);
+        frame.add(clickButton, BorderLayout.SOUTH);
+
+        // Показываем окно
+        frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        // Запускаем приложение
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Clicker();
+            }
+        });
+    }
+}
