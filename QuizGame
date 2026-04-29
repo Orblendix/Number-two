@@ -1,0 +1,317 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class QuizGame extends JFrame {
+
+    private int currentQuestionIndex = 0;
+    private int score = 0;
+    private QuizQuestion[] questions;
+
+    private JLabel questionLabel;
+    private JPanel answersPanel;
+    private JButton nextButton;
+    private JLabel statusLabel;
+
+    public QuizGame() {
+        setTitle("Викторина");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(600, 500);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        // Загружаем вопросы
+        initQuestions();
+
+        // Верхняя панель с вопросом и статусом
+        JPanel topPanel = new JPanel(new BorderLayout());
+        questionLabel = new JLabel();
+        questionLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        questionLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        topPanel.add(questionLabel, BorderLayout.CENTER);
+
+        statusLabel = new JLabel("Вопрос 1 из " + questions.length);
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        topPanel.add(statusLabel, BorderLayout.SOUTH);
+
+        // Панель для вариантов ответов
+        answersPanel = new JPanel();
+        answersPanel.setLayout(new GridLayout(4, 1, 10, 10));
+        answersPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Кнопка "Следующий"
+        nextButton = new JButton("Далее");
+        nextButton.setFont(new Font("Arial", Font.BOLD, 16));
+        nextButton.addActionListener(new NextButtonListener());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(nextButton);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
+        add(topPanel, BorderLayout.NORTH);
+        add(answersPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Загружаем первый вопрос
+        loadQuestion();
+    }
+
+    private void initQuestions() {
+        questions = new QuizQuestion[] {
+            // Вопрос 1: с вариантами ответа
+            new ChoiceQuestion(
+                "Какой язык программирования используется для создания Android-приложений?",
+                new String[]{"Python", "Java", "C++", "JavaScript"},
+                1  // Java (индекс 1)
+            ),
+            // Вопрос 2: true/false
+            new TrueFalseQuestion(
+                "Java — это язык программирования, который поддерживает объектно-ориентированное программирование.",
+                true
+            ),
+            // Вопрос 3: ввод числа
+            new NumericQuestion(
+                "Сколько букв в слове 'компьютер'?",
+                9
+            ),
+            // Вопрос 4: выбор из вариантов (столица)
+            new ChoiceQuestion(
+                "Какая столица Франции?",
+                new String[]{"Берлин", "Мадрид", "Париж", "Лондон"},
+                2  // Париж (индекс 2)
+            ),
+            // Вопрос 5: true/false
+            new TrueFalseQuestion(
+                "Земля вращается вокруг Солнца.",
+                true
+            )
+        };
+    }
+
+    private void loadQuestion() {
+        if (currentQuestionIndex >= questions.length) {
+            finishQuiz();
+            return;
+        }
+
+        QuizQuestion q = questions[currentQuestionIndex];
+        questionLabel.setText(q.getQuestionText());
+        statusLabel.setText("Вопрос " + (currentQuestionIndex + 1) + " из " + questions.length);
+
+        // Очищаем панель с ответами
+        answersPanel.removeAll();
+
+        // Создаём интерфейс ввода в зависимости от типа вопроса
+        JComponent inputComponent = q.createInputComponent();
+
+        // Для ChoiceQuestion и TrueFalseQuestion создаём кнопку "Ответить" прямо на панели
+        if (q instanceof ChoiceQuestion || q instanceof TrueFalseQuestion) {
+            answersPanel.setLayout(new BorderLayout());
+            JPanel centerPanel = new JPanel(new GridBagLayout());
+            centerPanel.add(inputComponent);
+            answersPanel.add(centerPanel, BorderLayout.CENTER);
+
+            JButton answerButton = new JButton("Ответить");
+            answerButton.addActionListener(e -> {
+                boolean isCorrect = q.checkAnswer(inputComponent);
+                if (isCorrect) {
+                    score++;
+                    JOptionPane.showMessageDialog(this, "Правильно! +1 балл.", "Результат", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Неправильно! Правильный ответ: " + q.getCorrectAnswerString(), "Результат", JOptionPane.ERROR_MESSAGE);
+                }
+                nextButton.doClick();
+            });
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(answerButton);
+            answersPanel.add(buttonPanel, BorderLayout.SOUTH);
+        } 
+        // Для NumericQuestion
+        else if (q instanceof NumericQuestion) {
+            answersPanel.setLayout(new BorderLayout());
+            JPanel centerPanel = new JPanel(new GridBagLayout());
+            centerPanel.add(inputComponent);
+            answersPanel.add(centerPanel, BorderLayout.CENTER);
+
+            JButton answerButton = new JButton("Ответить");
+            answerButton.addActionListener(e -> {
+                boolean isCorrect = q.checkAnswer(inputComponent);
+                if (isCorrect) {
+                    score++;
+                    JOptionPane.showMessageDialog(this, "Правильно! +1 балл.", "Результат", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Неправильно! Правильный ответ: " + q.getCorrectAnswerString(), "Результат", JOptionPane.ERROR_MESSAGE);
+                }
+                nextButton.doClick();
+            });
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(answerButton);
+            answersPanel.add(buttonPanel, BorderLayout.SOUTH);
+        }
+
+        answersPanel.revalidate();
+        answersPanel.repaint();
+    }
+
+    private void finishQuiz() {
+        String resultMessage = String.format(
+            "Викторина завершена!\n\nВаш результат: %d из %d (%.1f%%)",
+            score, questions.length, (score * 100.0 / questions.length)
+        );
+        JOptionPane.showMessageDialog(this, resultMessage, "Итоги викторины", JOptionPane.INFORMATION_MESSAGE);
+        System.exit(0);
+    }
+
+    private class NextButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+    }
+
+    // Абстрактный класс вопроса
+    abstract class QuizQuestion {
+        protected String questionText;
+
+        public QuizQuestion(String questionText) {
+            this.questionText = questionText;
+        }
+
+        public String getQuestionText() {
+            return questionText;
+        }
+
+        public abstract JComponent createInputComponent();
+        public abstract boolean checkAnswer(JComponent inputComponent);
+        public abstract String getCorrectAnswerString();
+    }
+
+    // Вопрос с выбором из нескольких вариантов
+    class ChoiceQuestion extends QuizQuestion {
+        private String[] options;
+        private int correctIndex;
+
+        public ChoiceQuestion(String questionText, String[] options, int correctIndex) {
+            super(questionText);
+            this.options = options;
+            this.correctIndex = correctIndex;
+        }
+
+        @Override
+        public JComponent createInputComponent() {
+            JPanel panel = new JPanel(new GridLayout(options.length, 1, 5, 5));
+            ButtonGroup group = new ButtonGroup();
+            JRadioButton[] buttons = new JRadioButton[options.length];
+            for (int i = 0; i < options.length; i++) {
+                buttons[i] = new JRadioButton(options[i]);
+                buttons[i].setActionCommand(String.valueOf(i));
+                group.add(buttons[i]);
+                panel.add(buttons[i]);
+            }
+            return panel;
+        }
+
+        @Override
+        public boolean checkAnswer(JComponent inputComponent) {
+            JPanel panel = (JPanel) inputComponent;
+            for (Component comp : panel.getComponents()) {
+                JRadioButton rb = (JRadioButton) comp;
+                if (rb.isSelected() && Integer.parseInt(rb.getActionCommand()) == correctIndex) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public String getCorrectAnswerString() {
+            return options[correctIndex];
+        }
+    }
+
+    // Вопрос с ответом true/false
+    class TrueFalseQuestion extends QuizQuestion {
+        private boolean correctAnswer;
+
+        public TrueFalseQuestion(String questionText, boolean correctAnswer) {
+            super(questionText);
+            this.correctAnswer = correctAnswer;
+        }
+
+        @Override
+        public JComponent createInputComponent() {
+            JPanel panel = new JPanel(new GridLayout(2, 1, 5, 5));
+            ButtonGroup group = new ButtonGroup();
+            JRadioButton trueButton = new JRadioButton("Правда");
+            JRadioButton falseButton = new JRadioButton("Ложь");
+            trueButton.setActionCommand("true");
+            falseButton.setActionCommand("false");
+            group.add(trueButton);
+            group.add(falseButton);
+            panel.add(trueButton);
+            panel.add(falseButton);
+            return panel;
+        }
+
+        @Override
+        public boolean checkAnswer(JComponent inputComponent) {
+            JPanel panel = (JPanel) inputComponent;
+            for (Component comp : panel.getComponents()) {
+                JRadioButton rb = (JRadioButton) comp;
+                if (rb.isSelected()) {
+                    boolean answer = Boolean.parseBoolean(rb.getActionCommand());
+                    return answer == correctAnswer;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public String getCorrectAnswerString() {
+            return correctAnswer ? "Правда" : "Ложь";
+        }
+    }
+
+    // Вопрос с числовым ответом
+    class NumericQuestion extends QuizQuestion {
+        private int correctNumber;
+
+        public NumericQuestion(String questionText, int correctNumber) {
+            super(questionText);
+            this.correctNumber = correctNumber;
+        }
+
+        @Override
+        public JComponent createInputComponent() {
+            JTextField textField = new JTextField(10);
+            textField.setHorizontalAlignment(JTextField.CENTER);
+            JPanel panel = new JPanel();
+            panel.add(textField);
+            return panel;
+        }
+
+        @Override
+        public boolean checkAnswer(JComponent inputComponent) {
+            JPanel panel = (JPanel) inputComponent;
+            JTextField textField = (JTextField) panel.getComponent(0);
+            try {
+                int answer = Integer.parseInt(textField.getText().trim());
+                return answer == correctNumber;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public String getCorrectAnswerString() {
+            return String.valueOf(correctNumber);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new QuizGame().setVisible(true));
+    }
+}
