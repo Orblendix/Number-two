@@ -1,0 +1,37 @@
+import javax.swing.*;
+import java.awt.*;
+
+public class FirstLabel {
+
+    public static void main(String[] args) {
+        // Создаём главное окно
+        JFrame frame = new JFrame("Моё первое окно");
+        
+        // Устанавливаем размер окна (произвольный)
+        frame.setSize(600, 400);
+        
+        // Закрытие окна при нажатии на крестик
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Размещаем окно по центру экрана
+        frame.setLocationRelativeTo(null);
+        
+        // Создаём надпись
+        JLabel label = new JLabel("Моя первая надпись!", SwingConstants.CENTER);
+        
+        // Создаём шрифт: 
+        // - "Segoe UI" (можно заменить на "Arial", "Times New Roman", "Verdana" и т.д.)
+        // - Font.ITALIC (курсив) или Font.BOLD (жирный) или Font.PLAIN (обычный)
+        // - 50 (размер)
+        Font customFont = new Font("Segoe UI", Font.ITALIC, 50);
+        
+        // Применяем шрифт к надписи
+        label.setFont(customFont);
+        
+        // Добавляем надпись в центр окна
+        frame.add(label);
+        
+        // Показываем окно
+        frame.setVisible(true);
+    }
+}
