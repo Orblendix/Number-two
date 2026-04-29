@@ -1,0 +1,164 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CustomResolutionChooser extends JDialog {
+
+    private JRadioButton resolution640x480;
+    private JRadioButton resolution800x600;
+    private JRadioButton resolution1024x768;
+    private JRadioButton resolution1280x720;
+    private JRadioButton resolution1366x768;
+    private JRadioButton resolution1920x1080;
+    private JRadioButton resolution2560x1440;
+    private ButtonGroup buttonGroup;
+    private JButton okButton;
+    private JButton cancelButton;
+
+    private int selectedWidth = 800;
+    private int selectedHeight = 600;
+    private boolean isOkPressed = false;
+
+    public CustomResolutionChooser(JFrame parent) {
+        super(parent, "Выбор разрешения экрана", true);
+        setLayout(new BorderLayout());
+        setSize(350, 300);
+        setLocationRelativeTo(parent);
+
+        // Создаём панель с радиокнопками
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new GridLayout(7, 1));
+        radioPanel.setBorder(BorderFactory.createTitledBorder("Выберите разрешение:"));
+
+        resolution640x480 = new JRadioButton("640 x 480");
+        resolution800x600 = new JRadioButton("800 x 600");
+        resolution1024x768 = new JRadioButton("1024 x 768");
+        resolution1280x720 = new JRadioButton("1280 x 720");
+        resolution1366x768 = new JRadioButton("1366 x 768");
+        resolution1920x1080 = new JRadioButton("1920 x 1080");
+        resolution2560x1440 = new JRadioButton("2560 x 1440");
+
+        // Группируем радиокнопки (чтобы можно было выбрать только одну)
+        buttonGroup = new ButtonGroup();
+        buttonGroup.add(resolution640x480);
+        buttonGroup.add(resolution800x600);
+        buttonGroup.add(resolution1024x768);
+        buttonGroup.add(resolution1280x720);
+        buttonGroup.add(resolution1366x768);
+        buttonGroup.add(resolution1920x1080);
+        buttonGroup.add(resolution2560x1440);
+
+        // Выбираем значение по умолчанию
+        resolution800x600.setSelected(true);
+
+        radioPanel.add(resolution640x480);
+        radioPanel.add(resolution800x600);
+        radioPanel.add(resolution1024x768);
+        radioPanel.add(resolution1280x720);
+        radioPanel.add(resolution1366x768);
+        radioPanel.add(resolution1920x1080);
+        radioPanel.add(resolution2560x1440);
+
+        // Панель для кнопок
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+
+        okButton = new JButton("ОК");
+        cancelButton = new JButton("Отмена");
+
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+
+        // Добавляем панели в окно
+        add(radioPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Обработчики кнопок
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Определяем выбранное разрешение
+                if (resolution640x480.isSelected()) {
+                    selectedWidth = 640;
+                    selectedHeight = 480;
+                } else if (resolution800x600.isSelected()) {
+                    selectedWidth = 800;
+                    selectedHeight = 600;
+                } else if (resolution1024x768.isSelected()) {
+                    selectedWidth = 1024;
+                    selectedHeight = 768;
+                } else if (resolution1280x720.isSelected()) {
+                    selectedWidth = 1280;
+                    selectedHeight = 720;
+                } else if (resolution1366x768.isSelected()) {
+                    selectedWidth = 1366;
+                    selectedHeight = 768;
+                } else if (resolution1920x1080.isSelected()) {
+                    selectedWidth = 1920;
+                    selectedHeight = 1080;
+                } else if (resolution2560x1440.isSelected()) {
+                    selectedWidth = 2560;
+                    selectedHeight = 1440;
+                }
+
+                isOkPressed = true;
+                dispose(); // Закрываем диалоговое окно
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Закрываем окно без выбора
+            }
+        });
+    }
+
+    public boolean isOkPressed() {
+        return isOkPressed;
+    }
+
+    public int getSelectedWidth() {
+        return selectedWidth;
+    }
+
+    public int getSelectedHeight() {
+        return selectedHeight;
+    }
+
+    // Главный метод для запуска приложения
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JFrame dummyFrame = new JFrame(); // Вспомогательный фрейм для диалога
+                CustomResolutionChooser chooser = new CustomResolutionChooser(dummyFrame);
+                chooser.setVisible(true);
+
+                if (chooser.isOkPressed()) {
+                    // Открываем главное окно с выбранным разрешением
+                    openMainWindow(chooser.getSelectedWidth(), chooser.getSelectedHeight());
+                } else {
+                    System.out.println("Выбор отменён");
+                }
+
+                dummyFrame.dispose(); // Закрываем вспомогательный фрейм
+            }
+        });
+    }
+
+    private static void openMainWindow(int width, int height) {
+        JFrame mainFrame = new JFrame("Новое окно - " + width + "x" + height);
+        mainFrame.setSize(width, height);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setLocationRelativeTo(null);
+
+        // Добавляем текст в центр окна
+        JLabel label = new JLabel("Разрешение окна: " + width + " x " + height, SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 20));
+        mainFrame.add(label);
+
+        mainFrame.setVisible(true);
+    }
+}
